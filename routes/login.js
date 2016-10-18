@@ -9,7 +9,7 @@ var $db = require('../conf/db');
 router.get('/', jwtauth, function(req, res, next) {
 	// res.render('login', { title: 'login' });
 	if(req.status == 401) {
-		res.status(401).json({message: '需要身份认证'});
+		res.status(401).json({message: '需要身份认证', documentation_url: 'http://docsttmall.yutlee.com'});
 	}else {
 		// res.render('login', { title: 'login' });
 		res.status(200).end();
