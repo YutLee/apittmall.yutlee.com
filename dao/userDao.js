@@ -23,7 +23,7 @@ var jsonWrite = function (res, ret) {
  
 module.exports = {
 	add: function (req, res, next) {
-		connection.query('SELECT * FROM USERS', function(err, rows, fields) {
+		connection.query('select * from user', function(err, rows, fields) {
 			if (err) throw err;
 		 	console.log(rows[0]);
 		 	res.send('Hello');
