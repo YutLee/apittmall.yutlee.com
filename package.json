@@ -1,11 +1,17 @@
 {
   "name": "ttmall-api",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "start": "supervisor ./bin/www"
   },
+  "apidoc": {
+    "name": "apittmall",
+    "version": "0.1.0",
+    "description": "ttmall api doc"
+  },
   "dependencies": {
+    "apidoc": "^0.16.1",
     "body-parser": "~1.15.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.2.0",

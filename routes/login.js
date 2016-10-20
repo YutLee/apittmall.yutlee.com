@@ -5,16 +5,30 @@ var jwtauth = require('./jwtauth');
 var mysql = require('mysql');
 var $db = require('../conf/db');
 
-// 登录
-router.get('/', jwtauth, function(req, res, next) {
-	if(req.status == 401) {
-		res.status(401).json({message: '需要身份认证'});
-	}else {
-		res.status(204).end();
-	}
-});
-
-// 登录
+/**
+ * @api {put} /login login
+ * @apiGroup User
+ * @apiName Login
+ *
+ * @apiParam {String} name Users name.
+ * @apiParam {String} pass Users password.
+ *
+ * @apiSuccess {String} message Message of login.
+ *
+ * @apiSuccessExample Success-Response:
+ *     HTTP/1.1 200 OK
+ *     {
+ *       "message": "success"
+ *     }
+ *
+ * @apiError NotFound The method of the login was wrong.
+ *
+ * @apiErrorExample Error-Response:
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Not Found"
+ *     }
+ */
 router.put('/', jwtauth, function(req, res, next) {
 	var connection;
 
