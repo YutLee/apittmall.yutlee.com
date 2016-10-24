@@ -9,54 +9,77 @@ var $db = require('../conf/db');
  * @api {put} /login login
  * @apiGroup User
  * @apiName Login
+ * @apiVersion 0.1.0
  *
- * @apiParam {String} name Users name.
- * @apiParam {String} pass Users password.
+ * @apiParam {String} name 登录名（用户名/邮箱/手机号）
+ * @apiParam {String} password 密码
  *
- * @apiSuccess {String} message Message of login.
+ * @apiSuccess {Number} code 提示代码（200， 4001， 4002， 4003）。
+ * @apiSuccess {String} message 提示信息。
  *
  * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *       "message": "success"
- *     }
+ *  HTTP/1.1 200 OK
+ *  {
+ *      "code": 200	//登录成功
+ *  }
  *
- * @apiError NotFound The method of the login was wrong.
+ *  HTTP/1.1 200 OK
+ *  {
+ *      "code": 4001,
+ *      "message": "用户名不能为空"
+ *  }
+ *
+ *  HTTP/1.1 200 OK
+ *  {
+ *      "code": 4002,
+ *      "message": "密码不能为空"
+ *  }
+ *
+ *  HTTP/1.1 200 OK
+ *  {
+ *      "code": 4003,
+ *      "message": "用户名或密码错误"
+ *  }
+ *
+ * @apiError {Number} code 提示代码。
+ * @apiError {String} message 提示信息。
  *
  * @apiErrorExample Error-Response:
- *     HTTP/1.1 404 Not Found
- *     {
- *       "message": "Not Found"
- *     }
+ *  HTTP/1.1 404 Not Found
+ *  {
+ *      "code": 404,
+ *      "message": "请求页面不存在"
+ *  }
  */
 router.put('/', jwtauth, function(req, res, next) {
 	var connection;
-
 	if(req.status == 401) {
 		if(!req.body || !req.body.name || req.body.name.trim() == '') {
-			res.status(200).json({message: '用户名不能为空'});
+			res.status(200).json({code: 4001, message: '用户名不能为空'});
 			return;
 		}
-		if(!req.body || !req.body.pass || req.body.pass.trim() == '') {
-			res.status(200).json({message: '密码不能为空'});
+		if(!req.body || !req.body.password || req.body.password.trim() == '') {
+			res.status(200).json({code: 4002, message: '密码不能为空'});
 			return;
 		}
 		
 		connection = mysql.createConnection($db.mysql);
-		connection.query('select * from user_auths where identifier="' + req.body.name + '" and credential="' + req.body.pass + '"', function(err, rows, fields) {
-			if(err) {
+		connection.query('select * from user_auths where identifier="' + req.body.name + '" and credential="' + req.body.password + '"', function(err, rows, fields) {
+			if(err || (rows && rows.length <= 0)) {
 				// throw err;
-				res.status(200).json({message: '用户名或密码错误'});//better 401?
+				res.status(200).json({code: 4003, message: '用户名或密码错误'});//better 401?
 				return;
 			}
 			
 			var token = jwt.sign({ user_id: rows[0].user_id }, 'access_token', {expiresIn: '7d'});
+			// req.session.access = token;
 			// res.cookie('access_token', token, { maxAge: 7 * 24 * 3600000, httpOnly: true });
-			res.cookie('access_token', token, { maxAge: 7 * 24 * 3600000 });
-			res.status(200).json({message: '登录成功'});
+			// res.cookie('access_token', token, { maxAge: 7 * 24 * 3600000 });
+			req.session.access_token = token;
+			res.status(200).json({code: 200});
 		});
 	}else {
-		res.status(200).json({message: '登录成功'});
+		res.status(200).json({code: 200});
 	}
 
 });

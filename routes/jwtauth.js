@@ -4,8 +4,8 @@ var $db = require('../conf/db');
 
 module.exports = function(req, res, next) {
 	// res.set('Content-Type', 'application/json;charset=utf-8');
-  	var token = (req.cookies && req.cookies.access_token) || req.headers['x-access-token'] || (req.body && req.body.access_token) || (req.query && req.query.access_token);
-
+  	// var token = (req.cookies && req.cookies.access_token) || req.headers['x-access-token'] || (req.body && req.body.access_token) || (req.query && req.query.access_token);
+  	var token = req.session.access_token || null;
 	if(token) {
 		var decoded;
 		try{
@@ -29,7 +29,8 @@ module.exports = function(req, res, next) {
 			}else {
 			 	req.status = 200;
 			 	token = jwt.sign({ user_id: decoded.user_id }, 'access_token', {expiresIn: '7d'});
-				res.cookie('access_token', token, { maxAge: 7 * 24 * 3600000});
+			 	req.session.access_token = token;
+				// res.cookie('access_token', token, { maxAge: 7 * 24 * 3600000});
 			}
 		 	next();
 		});

@@ -2,11 +2,12 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
+// var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var bodyParser = require('body-parser');
 var multer  = require('multer');
 
-var routes = require('./routes/index');
+var index = require('./routes/index');
 var users = require('./routes/users');
 var login = require('./routes/login');
 
@@ -22,11 +23,12 @@ app.set('Content-Type', 'application/json;charset=utf-8');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(session({ secret: 'access', name: 'access_token', resave: false, saveUninitialized: false}));
 app.use(multer().array());
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
+app.use('/', index);
 app.use('/users', users);
 app.use('/login', login);
 
@@ -35,7 +37,7 @@ app.use(function(req, res, next) {
   var err = new Error('Not Found');
   // err.status = 404;
   // next();
-  res.status(err.status || 404).json({message: 'Not Found'});
+  res.status(err.status || 404).json({code: 404, message: '请求页面不存在'});
 });
 
 // error handlers
