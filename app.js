@@ -2,14 +2,16 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-// var cookieParser = require('cookie-parser');
-var session = require('express-session');
+var cookieParser = require('cookie-parser');
+// var session = require('express-session');
 var bodyParser = require('body-parser');
 var multer  = require('multer');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-var login = require('./routes/login');
+var signIn = require('./routes/sign_in');
+var signOut = require('./routes/sign_out');
+var signUp = require('./routes/sign_up');
 
 var app = express();
 
@@ -17,7 +19,7 @@ var app = express();
 // app.set('views', path.join(__dirname, 'views'));
 // app.set('view engine', 'jade');
 app.set('Content-Type', 'application/json;charset=utf-8');
-app.set('Access-Control-Allow-Origin', 'yutlee.com, yutlee.cn');
+// app.set('Access-Control-Allow-Origin', 'yutlee.com, yutlee.cn');
 // app.set('Access-Control-Allow-Credentials', true);//告诉客户端可以在HTTP请求中带上Cookie
 // app.set('Access-Control-Allow-Headers', 'Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, Content-Language, Cache-Control, X-E4M-With,X_FILENAME');
 // app.set('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS');
@@ -27,14 +29,16 @@ app.set('Access-Control-Allow-Origin', 'yutlee.com, yutlee.cn');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(session({ secret: 'access', name: 'access_token', resave: false, saveUninitialized: false}));
+// app.use(session({ secret: 'access', name: 'access_token', resave: false, saveUninitialized: false}));
 app.use(multer().array());
-// app.use(cookieParser());
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
-app.use('/login', login);
+app.use('/sign_in', signIn);
+app.use('/sign_out', signOut);
+app.use('/sign_up', signUp);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

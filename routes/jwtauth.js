@@ -6,17 +6,18 @@ module.exports = function(req, res, next) {
 	// res.set('Content-Type', 'application/json;charset=utf-8');
   	var token = (req.cookies && req.cookies.access_token) || req.headers['x-access-token'] || (req.body && req.body.access_token) || (req.query && req.query.access_token);
   	// var token = req.session.access_token || null;
-
 	if(token) {
 		var decoded;
+	    var now = Math.floor(Date.now() / 1000);
 		try{
 	    	decoded = jwt.verify(token, 'access_token');
+	    	console.log(decoded);
 	    }catch(err) {
 	    	req.status = 401;
     		next();
 	    }
 
-    	if(!decoded) {
+    	if(!decoded || (decoded.iat > now || decoded.exp < now)) {
     		req.status = 401;
     		next();
     		return;
@@ -29,7 +30,7 @@ module.exports = function(req, res, next) {
 				// throw err;
 				req.status = 401;
 			}else {
-			 	token = jwt.sign({ id: rows[0].id, user_id: rows[0].user_id }, 'access_token', {expiresIn: 1800});
+			 	token = jwt.sign({ id: rows[0].id, user_id: rows[0].user_id }, 'access_token', {expiresIn: 5});
 				res.cookie('access_token', token, { maxAge: 1800 * 1000});
 			 	req.status = 200;
 			 	req.token = token;
