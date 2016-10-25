@@ -17,6 +17,10 @@ var app = express();
 // app.set('views', path.join(__dirname, 'views'));
 // app.set('view engine', 'jade');
 app.set('Content-Type', 'application/json;charset=utf-8');
+app.set('Access-Control-Allow-Origin', 'yutlee.com, yutlee.cn');
+// app.set('Access-Control-Allow-Credentials', true);//告诉客户端可以在HTTP请求中带上Cookie
+// app.set('Access-Control-Allow-Headers', 'Origin, No-Cache, X-Requested-With, If-Modified-Since, Pragma, Last-Modified, Cache-Control, Expires, Content-Type, Content-Language, Cache-Control, X-E4M-With,X_FILENAME');
+// app.set('Access-Control-Allow-Methods', 'PUT,POST,GET,DELETE,OPTIONS');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
