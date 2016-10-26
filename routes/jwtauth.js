@@ -1,6 +1,7 @@
 var jwt = require('jsonwebtoken');
 var mysql = require('mysql');
 var $db = require('../conf/db');
+var cache = require('memory-cache');
 
 module.exports = function(req, res, next) {
 	// res.set('Content-Type', 'application/json;charset=utf-8');
@@ -11,7 +12,6 @@ module.exports = function(req, res, next) {
 	    var now = Math.floor(Date.now() / 1000);
 		try{
 	    	decoded = jwt.verify(token, 'access_token');
-	    	console.log(decoded);
 	    }catch(err) {
 	    	req.status = 401;
     		next();
@@ -22,21 +22,17 @@ module.exports = function(req, res, next) {
     		next();
     		return;
     	}
-    	
-		var connection = mysql.createConnection($db.mysql);
-		// connection.query('select * from users where id=' + decoded.user_id, function(err, rows, fields) {
-		connection.query('select * from user_auths where id="' + decoded.id + '"', function(err, rows, fields) {
-			if(err || (rows && rows.length <= 0)) {
-				// throw err;
-				req.status = 401;
-			}else {
-			 	token = jwt.sign({ id: rows[0].id, user_id: rows[0].user_id }, 'access_token', {expiresIn: 5});
-				res.cookie('access_token', token, { maxAge: 1800 * 1000});
-			 	req.status = 200;
-			 	req.token = token;
-			}
-		 	next();
-		});
+
+    	var accessToken = cache.get('access_token_' + decoded.id);
+    	// console.log(accessToken);
+    	if(!accessToken) {
+    		req.status = 401;
+    	}else {
+    		req.tokenDecoded = decoded;
+    		req.token = token;
+    		req.status = 200;
+    	}
+    	next();
 	} else {
 		req.status = 401;
 		next();

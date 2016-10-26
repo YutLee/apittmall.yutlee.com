@@ -4,11 +4,12 @@ var jwt = require('jsonwebtoken');
 var jwtauth = require('./jwtauth');
 var mysql = require('mysql');
 var $db = require('../conf/db');
+var cache = require('memory-cache');
 
 /**
- * @api {put} /login login
+ * @api {put} /sign_in Sign in
  * @apiGroup User
- * @apiName Login
+ * @apiName Sign in
  * @apiVersion 0.1.0
  *
  * @apiParam {String} username 登录名（用户名/邮箱/手机号）
@@ -54,6 +55,8 @@ var $db = require('../conf/db');
  */
 router.post('/', jwtauth, function(req, res, next) {
 	var connection, password;
+	const TIMEOUT = 1800;
+
 	if(req.status == 401) {
 		if(!req.body || !req.body.username || req.body.username.trim() == '') {
 			res.status(200).json({code: 4001, message: '用户名不能为空'});
@@ -74,15 +77,31 @@ router.post('/', jwtauth, function(req, res, next) {
 				return;
 			}
 			
-			var token = jwt.sign({ id: rows[0].id, user_id: rows[0].user_id }, 'access_token', {expiresIn: 1800});
+			var token = jwt.sign({ id: rows[0].id, user_id: rows[0].user_id }, 'access_token', {expiresIn: TIMEOUT});
+			cache.put('access_token_last_' + rows[0].id, Date.now(), TIMEOUT * 1000);
+			cache.put('access_token_' + rows[0].id, token, TIMEOUT * 1000, function(key, value) {
+				// console.log(key + ' : ' + value);
+			});
 			// res.cookie('access_token', token, { maxAge: 7 * 24 * 3600000, httpOnly: true });
-			res.cookie('access_token', token, { maxAge: 1800 * 1000 });
+			res.cookie('access_token', token, { maxAge: TIMEOUT * 1000 });
 			// res.header('x-access-token', token);
 			// req.session.access_token = token;
 			res.status(200).json({code: 200, access_token: token});
 		});
+	}else if(req.status == 200) {
+		var decoded = req.tokenDecoded;
+		var accessToken = req.token;
+		if(Date.now() - cache.get('access_token_last_' + decoded.id) > (TIMEOUT - 60) * 1000) {
+			accessToken = jwt.sign({ id: decoded.id, user_id: decoded.user_id }, 'access_token', {expiresIn: TIMEOUT});
+			cache.put('access_token_last_' + decoded.id, Date.now(), TIMEOUT * 1000);
+			cache.put('access_token_' + decoded.id, accessToken, TIMEOUT * 1000, function(key, value) {
+				// console.log(key + ' : ' + value);
+			});
+			res.cookie('access_token', accessToken, { maxAge: TIMEOUT * 1000 });
+		}
+		res.status(200).json({code: 200, access_token: accessToken});
 	}else {
-		res.status(200).json({code: 200, access_token: req.token});
+		res.status(200).json({code: 5000, message: '未知错误'});
 	}
 });
 
