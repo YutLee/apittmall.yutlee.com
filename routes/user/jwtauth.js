@@ -1,7 +1,7 @@
 var jwt = require('jsonwebtoken');
 var mysql = require('mysql');
-var $db = require('../conf/db');
 var cache = require('memory-cache');
+var $db = require('../../conf/db');
 
 module.exports = function(req, res, next) {
 	// res.set('Content-Type', 'application/json;charset=utf-8');

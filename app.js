@@ -9,9 +9,11 @@ var multer  = require('multer');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
-var signIn = require('./routes/sign_in');
-var signOut = require('./routes/sign_out');
-var signUp = require('./routes/sign_up');
+var login = require('./routes/user/login');
+var logout = require('./routes/user/logout');
+var join = require('./routes/user/join');
+var joinCheckEmail = require('./routes/user/join_check/email');
+var joinCheckName = require('./routes/user/join_check/name');
 
 var app = express();
 
@@ -36,9 +38,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
-app.use('/sign_in', signIn);
-app.use('/sign_out', signOut);
-app.use('/sign_up', signUp);
+app.use('/login', login);
+app.use('/logout', logout);
+app.use('/join', join);
+app.use('/join_check/email', joinCheckEmail);
+app.use('/join_check/name', joinCheckName);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
