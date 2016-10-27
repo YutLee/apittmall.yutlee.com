@@ -3,7 +3,7 @@ var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
-// var session = require('express-session');
+var session = require('express-session');
 var bodyParser = require('body-parser');
 var multer  = require('multer');
 
@@ -14,6 +14,7 @@ var logout = require('./routes/user/logout');
 var join = require('./routes/user/join');
 var joinCheckEmail = require('./routes/user/join_check/email');
 var joinCheckName = require('./routes/user/join_check/name');
+var captcha = require('./routes/user/captcha');
 
 var app = express();
 
@@ -31,7 +32,7 @@ app.set('Content-Type', 'application/json;charset=utf-8');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(session({ secret: 'access', name: 'access_token', resave: false, saveUninitialized: false}));
+app.use(session({ secret: 'key', name: 'key', resave: false, saveUninitialized: false}));
 app.use(multer().array());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -43,6 +44,7 @@ app.use('/logout', logout);
 app.use('/join', join);
 app.use('/join_check/email', joinCheckEmail);
 app.use('/join_check/name', joinCheckName);
+app.use('/captcha', captcha);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
