@@ -5,7 +5,7 @@ var mysql = require('mysql');
 var $db = require('../../conf/db');
 
 /**
- * @api {put} /join Join
+ * @api {post} /join Join
  * @apiGroup User
  * @apiName Join
  * @apiVersion 0.1.0

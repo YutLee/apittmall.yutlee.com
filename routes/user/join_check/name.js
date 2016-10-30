@@ -7,7 +7,7 @@ var $db = require('../../../conf/db');
 var jwtauth = require('../jwtauth');
 
 /**
- * @api {put} /join_check/name checkUserName
+ * @api {post} /join_check/name checkUserName
  * @apiGroup User
  * @apiName checkUserName
  * @apiVersion 0.1.0

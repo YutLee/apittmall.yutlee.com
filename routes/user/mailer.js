@@ -3,7 +3,7 @@ var router = express.Router();
 var nodemailer = require('nodemailer');
 
 /**
- * @api {put} /mailer Mailer
+ * @api {post} /mailer Mailer
  * @apiGroup User
  * @apiName Mailer
  * @apiVersion 0.1.0

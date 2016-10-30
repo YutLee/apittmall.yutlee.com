@@ -7,7 +7,7 @@ var cache = require('memory-cache');
 var $db = require('../../conf/db');
 
 /**
- * @api {put} /logout Logout
+ * @api {delete} /logout Logout
  * @apiGroup User
  * @apiName Logout
  * @apiVersion 0.1.0
