@@ -16,6 +16,7 @@ var joinCheckEmail = require('./routes/user/join_check/email');
 var joinCheckName = require('./routes/user/join_check/name');
 var captcha = require('./routes/user/captcha');
 var mailer = require('./routes/user/mailer');
+var addFile = require('./routes/files/index');
 
 var app = express();
 
@@ -47,6 +48,7 @@ app.use('/join_check/email', joinCheckEmail);
 app.use('/join_check/name', joinCheckName);
 app.use('/captcha', captcha);
 app.use('/mailer', mailer);
+app.use('/file', addFile);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
